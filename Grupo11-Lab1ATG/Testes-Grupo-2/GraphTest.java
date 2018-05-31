@@ -1,32 +1,62 @@
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
 
 import graphLibrary.Edge;
 import graphLibrary.Graph;
+import graphLibrary.GraphManager;
+import graphLibrary.GraphReader;
+import graphLibrary.Representation;
 import graphLibrary.Vertex;
 
 public class GraphTest {
 
 	Graph emptyGraph;
-	Graph g1;
-	Graph g2;
-	Graph g3;
-	Graph g4;
+	Graph weightedGraph;
+	Graph normalGraph;
+	Graph negativeGraph;
+	Graph negativeWeightedGraph;
+	
+	Set<Vertex<Integer>> verticesOfWeightedGraph;
+	Set<Vertex<Integer>> verticesOfNormalGraph;
+	
+	Set<Edge> edgesOfWeightedGraph;
+	Set<Edge> edgesOfNormalGraph;
+
 	
 	@Before
 	public void setUp() throws Exception {
 		emptyGraph = new Graph();
-		g1 = new Graph();
-		g2 = new Graph();
+		
+		weightedGraph = GraphReader.readGraph("../Grupo11-Lab1ATG/Testes-Grupo-2/weightedGraph.txt", true);
+		normalGraph = GraphReader.readGraph("../Grupo11-Lab1ATG/Testes-Grupo-2/simpleGraph.txt", false);
+
+		negativeWeightedGraph = new Graph();
+		negativeGraph = new Graph();
+		
+		verticesOfNormalGraph = (HashSet<Vertex<Integer>>) normalGraph.getVertices();
+		verticesOfWeightedGraph = (HashSet<Vertex<Integer>>) weightedGraph.getVertices();
+		
 	}
 
 	@Test
 	public void testGraph() {
-		g3 = new Graph(10);
-		g4 = new Graph(0);
+		assertEquals(5, normalGraph.getVertexNumber());
+		assertEquals(5, weightedGraph.getVertexNumber());
+		
+		assertEquals(5, normalGraph.getEdgeNumber());
+		assertEquals(6, weightedGraph.getEdgeNumber());
+
+		//negativeWeightedGraph = reader.readGraph("../Grupo11-Lab1ATG/Testes-Grupo-2/negativeWeightedGraph.txt", true);
+		//negativeGraph = reader.readGraph("../Grupo11-Lab1ATG/Testes-Grupo-2/negativeSimpleGraph.txt", false);
+		
 	}
 
 	@Test
@@ -36,50 +66,56 @@ public class GraphTest {
 
 	@Test
 	public void testGetVertex() {
-		Vertex<Integer> v1 = new Vertex<>(1);
-		Vertex<Integer> v2 = new Vertex<>(2);
-		Edge e = new Edge(v1, v2);
-		g1.addEdge(e);
-		
-		assertEquals(null, g1.getVertex(null));
-		assertEquals(v1, g1.getVertex(1));
-		assertEquals(null, g1.getVertex(3));
-		
+	
 	}
 
 	@Test
 	public void testIsWeighted() {
-		fail("Not yet implemented");
+		assertTrue(weightedGraph.isWeighted());
+		assertFalse(normalGraph.isWeighted());
 	}
 
 	@Test
 	public void testSetVisitedVertex() {
-		fail("Not yet implemented");
+		weightedGraph.getVertex(2).setVisited(true);
+		assertEquals(true, weightedGraph.getVertex(2).getVisited());
 	}
 
 	@Test
 	public void testGetVertices() {
-		fail("Not yet implemented");
+		assertEquals(verticesOfNormalGraph, normalGraph.getVertices());
+		assertEquals(verticesOfWeightedGraph, weightedGraph.getVertices());
+		assertNull(emptyGraph.getVertices());
 	}
 
 	@Test
 	public void testGetAdjVertices() {
-		fail("Not yet implemented");
+		HashSet<Vertex<Integer>> adj = new HashSet<>();
+		adj.add(normalGraph.getVertex(2));
+		adj.add(normalGraph.getVertex(5));
+		
+		assertEquals(adj,  normalGraph.getAdjVertices(new Vertex(1)));
+		assertEquals(adj,  weightedGraph.getAdjVertices(new Vertex(1)));
 	}
 
 	@Test
 	public void testGetEdges() {
-		fail("Not yet implemented");
+		assertNotNull(normalGraph.getEdges());
+		assertNotNull(weightedGraph.getEdges());
+		assertNull(emptyGraph.getEdges());
 	}
 
 	@Test
 	public void testGetVertexNumber() {
-		fail("Not yet implemented");
+		assertEquals(0, emptyGraph.getVertexNumber());
+		assertEquals(5, normalGraph.getVertexNumber());
+		assertEquals(5, weightedGraph.getVertexNumber());
 	}
 
 	@Test
 	public void testSetWeight() {
-		fail("Not yet implemented");
+		normalGraph.setWeight(new Vertex<>(1), new Vertex<>(2), (float) 5.0);
+		normalGraph.setWeight(new Vertex<>(), new Vertex<>(), (float) 5.0);
 	}
 
 	@Test
@@ -89,32 +125,59 @@ public class GraphTest {
 
 	@Test
 	public void testGetMeanEdge() {
-		fail("Not yet implemented");
+		assertEquals(2.0, normalGraph.getMeanEdge());
+		assertEquals(2.0, weightedGraph.getMeanEdge());
 	}
 
 	@Test
 	public void testAddEdge() {
-		fail("Not yet implemented");
+		Vertex aux1 = new Vertex<>(1);
+		Vertex aux2 = new Vertex<>(2);
+		Edge edge = new Edge(aux1, aux2);
+		emptyGraph.addEdge(edge);
+		assertTrue(emptyGraph.getEdges().contains(edge));
 	}
 
 	@Test
 	public void testEqualsObject() {
-		fail("Not yet implemented");
+		try {
+			Graph one = GraphReader.readGraph("../Grupo11-Lab1ATG/Testes-Grupo-2/simpleGraph.txt", false);
+			Graph two = GraphReader.readGraph("../Grupo11-Lab1ATG/Testes-Grupo-2/simpleGraph.txt", false);
+			Graph three = GraphReader.readGraph("../Grupo11-Lab1ATG/Testes-Grupo-2/weightedGraph.txt", false);
+			assertEquals(one, two);
+			assertNotEquals(two, three);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Test
 	public void testGraphRepresentation() {
-		fail("Not yet implemented");
+		String normalAL = "1 - 2 5\n2 - 1 5\n3 - 5\n4 - 5\n5 - 1 2 3 4\n";
+		String normalAM = "  1 2 3 4 5 \n1 0 1 0 0 1 \n2 1 0 0 0 1 \n3 0 0 0 0 1 \n4 0 0 0 0 1 \n5 1 1 1 1 0 \n";
+		String weightedAL = "1 - 2(0.1) 5(1.0)\n2 - 5(0.2) 1(0.1)\n3 - 5(5.0) 4(-9.5)\n4 - 5(2.3) 3(-9.5)\n5 - 3(5.0) 4(2.3) 2(0.2) 1(1.0)\n";
+		String weightedAM = "not words for weightedgraph";// not works for weightedgraph
+		assertEquals(normalAL, normalGraph.graphRepresentation(Representation.AL));
+		assertEquals(normalAM, normalGraph.graphRepresentation(Representation.AM));
+		assertEquals(weightedAL, weightedGraph.graphRepresentation(Representation.AL));
+		assertEquals(weightedAM, weightedGraph.graphRepresentation(Representation.AM));
 	}
 
 	@Test
 	public void testDfs() {
-		fail("Not yet implemented");
+		String dfsPath = "1 - 0 -\n2 - 0 1\n5 - 1 2\n3 - 2 5\n4 - 2 5\n";
+		String weightedDfsPath = "1 - 0 -\n2 - 0 1\n5 - 1 2\n3 - 2 5\n4 - 3 3\n";
+		assertEquals(dfsPath, normalGraph.dfs(normalGraph.getVertex(1)));
+		assertEquals(weightedDfsPath, weightedGraph.dfs(weightedGraph.getVertex(1)));
+		assertEquals("", emptyGraph.bfs(null));
 	}
 
 	@Test
 	public void testBfs() {
-		fail("Not yet implemented");
+		String bfsPath = "1 - 0 -\n2 - 1 1\n5 - 1 1\n3 - 2 5\n4 - 2 5\n";
+		String weightedBfsPath = "";
+		assertEquals(bfsPath, normalGraph.bfs(normalGraph.getVertex(1)));
 	}
 
 	@Test
