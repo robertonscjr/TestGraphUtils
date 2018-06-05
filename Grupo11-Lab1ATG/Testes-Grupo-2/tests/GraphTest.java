@@ -1,6 +1,8 @@
+package tests;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,6 +21,7 @@ import graphLibrary.Vertex;
 public class GraphTest {
 
 	Graph emptyGraph;
+	
 	Graph weightedGraph;
 	Graph normalGraph;
 	Graph negativeGraph;
@@ -181,18 +184,66 @@ public class GraphTest {
 	}
 
 	@Test
-	public void testShortestPath() {
-		fail("Not yet implemented");
+	public void testShortestPath() throws IOException {
+		
+		// Normal graph
+		
+		//Default shortest path call
+		String result = normalGraph.shortestPath(normalGraph.getVertex(1),normalGraph.getVertex(3));
+		assertEquals("1 5 3 ", result);
+		
+		//Shortest path to same vertex
+		result = normalGraph.shortestPath(normalGraph.getVertex(1),normalGraph.getVertex(1));
+		assertEquals("1 ", result);
+		
+		//Shortest path to unregistered vertex
+		//result = normalGraph.shortestPath(normalGraph.getVertex(1),normalGraph.getVertex(15));
+		//assertEquals("", result); // Exception
+		
+		// Nao funciona para arestas positivas(Loop)
+		//Graph otherWeightedGraph = GraphReader.readGraph("../Grupo11-Lab1ATG/Testes-Grupo-2/weightedGraph2.txt", true);
+		//result = weightedGraph.shortestPath( weightedGraph.getVertex(1), weightedGraph.getVertex(4) );
+		
+		// Weighted Graph ( Não funciona para arestas negativas(Loop) )
+		//result = weightedGraph.shortestPath( weightedGraph.getVertex(1), weightedGraph.getVertex(4) );
 	}
 
 	@Test
-	public void testConnected() {
-		fail("Not yet implemented");
+	public void testConnected() throws IOException {
+		assertEquals(true,normalGraph.connected());
+		assertEquals(true,weightedGraph.connected());
+		
+		Graph otherWeightedGraph = GraphReader.readGraph("../Grupo11-Lab1ATG/Testes-Grupo-2/weightedGraph2.txt", true);
+		assertEquals(false,otherWeightedGraph.connected());
 	}
 
 	@Test
 	public void testMst() {
-		fail("Not yet implemented");
+		String[] expResult = {"Edge: 5 to 3, weigh: 1.0",
+								   "Edge: 1 to 5, weigh: 1.0",
+								   "Edge: 2 to 5, weigh: 1.0",
+								   "Edge: 4 to 5, weigh: 1.0"};
+		
+		Set<String> expectedResults = new HashSet<String>(Arrays.asList(expResult));
+		String[] result = normalGraph.mst().split("\n");
+		assertEquals(result.length, expectedResults.size());
+		for(String s : result) {
+			if(!expectedResults.contains(s)) {
+				fail();
+			}
+		}
+		
+		String[] weightedExpectedResults = { "Edge: 3 to 4, weigh: -9.5",
+											 "Edge: 1 to 2, weigh: 0.1",
+											 "Egde: 5 to 3, weigh: 5",
+											 "Edge: 2 to 5, weigh: 0.2" };
+		expectedResults = new HashSet<String>(Arrays.asList(weightedExpectedResults));
+		String[] weightedGraphResult = weightedGraph.mst().split("\n");
+		for(String s : weightedGraphResult) {
+			if(!expectedResults.contains(s)) {
+				fail();
+			}
+		}
+		assertEquals(weightedGraphResult.length, expectedResults.size());
 	}
-
 }
