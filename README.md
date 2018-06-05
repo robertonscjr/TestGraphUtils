@@ -1,11 +1,9 @@
 # TestLab1ATG2018.1
 
+### Grupo 2:
+* Ionésio Lima da Costa Júnior (115110120)
+* José Roberto do Nascimento Júnior (116110170)
+* Nicácio Oliveira de Sousa (115111897)
+
 ### Descrição:
-* * Avaliação da biblioteca de manipulação de grafos do [grupo 8](https://github.com/RonaldoMPF/Lab1ATG2018.1) da disciplina de Aplicações de Grafos.
-
-### Método de avaliação:
-* JUnit
-* EclEmma
-* Cobertura de código
-* ...
-
+* Relatório de avaliação da atividade prática 1 do grupo 11 para a disciplina de Aplicações de Teoria dos Grafos.
